@@ -8,6 +8,7 @@ from random import choice
 
 
 class Level:
+    
     def __init__(self):
         
         self.display_surface = pygame.display.get_surface()
@@ -16,14 +17,17 @@ class Level:
         self.obstacles_sprites = pygame.sprite.Group()
         self.create_map()
     
+    
     def create_map(self):
+        
         layouts = {
                 'boundary': import_csv_layout('./tmp/map/map_FloorBlocks.csv'),
                 'grass': import_csv_layout('./tmp/map/map_Grass.csv'),
                 'object': import_csv_layout('./tmp/map/map_LargeObjects.csv'),
         }
         graphics = {
-            'grass': import_folder('./tmp/graphics/Grass')
+            'grass': import_folder('./tmp/graphics/grass'),
+            'objects': import_folder('./tmp/graphics/objects'),
         }
         
         for style,layout in layouts.items():
@@ -32,22 +36,29 @@ class Level:
                     if col != '-1':
                         x = col_index * TILESIZE
                         y = row_index * TILESIZE
+                        
                         if style == 'boundary':
                             Tile((x,y),[self.obstacles_sprites], 'invisible')
+                            
                         if style == 'grass':
                             random_grass_image = choice(graphics['grass'])
                             Tile((x,y),[self.visible_sprites,self.obstacles_sprites], 'grass', random_grass_image)
+                            
                         if style == 'object':
-                            pass 
+                            surf = graphics['objects'][int(col)]
+                            Tile((x,y),[self.visible_sprites,self.obstacles_sprites],'object', surf)
         
         self.player = Player((2000,1430),[self.visible_sprites],self.obstacles_sprites)
             
+            
     def run(self):
+        
         self.visible_sprites.custom_draw(self.player )
         self.visible_sprites.update()
 
 
 class YSortCameraGroup(pygame.sprite.Group):
+    
     def __init__(self):
         
         super().__init__()
@@ -58,6 +69,7 @@ class YSortCameraGroup(pygame.sprite.Group):
         
         self.floor_surface = pygame.image.load('./tmp/graphics/tilemap/ground.png').convert()
         self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
+        
         
     def custom_draw(self,player):
         

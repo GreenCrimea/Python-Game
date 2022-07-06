@@ -12,7 +12,9 @@ def import_csv_layout(path):
             terrain_map.append(list(row))
         return terrain_map
     
+    
 def import_folder(path):
+    
     surface_list = []
     
     for _,__,img_files in walk(path):
