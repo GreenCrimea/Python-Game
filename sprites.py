@@ -41,6 +41,24 @@ class WildFlower(Generic):
         self.hitbox = self.rect.copy().inflate(-20,-self.rect.height * 0.9)
 
 
+class Particle(Generic):
+    def __init__(self, pos, surf, groups, z, duration = 200):
+        super().__init__(pos, surf, groups, z)
+        self.start_time = pygame.time.get_ticks()
+        self.duration = duration
+
+        #white surface
+        mask_surf = pygame.mask.from_surface(self.image)
+        new_surf = mask_surf.to_surface()
+        new_surf.set_colorkey((0,0,0))
+        self.image = new_surf
+
+    def update(self,dt):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.start_time > self.duration:
+            self.kill()
+
+
 class Trees(Generic):
     def __init__(self, pos, surf, groups, name):
         super().__init__(pos, surf, groups)
@@ -49,7 +67,7 @@ class Trees(Generic):
         self.health = 5
         self.alive = True
         stump_path = f'../Python-Game/graphics/stumps/{"small" if name == "Small" else "large"}.png'
-        self.stump_surf = pygame.image.load(stump_path).convert_alpha
+        self.stump_surf = pygame.image.load(stump_path).convert_alpha()
         self.invul_timer = Timer(200)
 
         #apples
@@ -63,7 +81,20 @@ class Trees(Generic):
 
         if len(self.apple_sprites.sprites()) > 0:
             random_apple = choice(self.apple_sprites.sprites())
+            Particle(random_apple.rect.topleft, random_apple.image, self.groups()[0], LAYERS["fruit"])
             random_apple.kill()
+
+    def check_death(self):
+        if self.health <= 0:
+            Particle(self.rect.topleft, self.image, self.groups()[0], LAYERS['fruit'], 275)
+            self.image = self.stump_surf
+            self.rect = self.image.get_rect(midbottom= self.rect.midbottom)
+            self.hitbox = self.rect.copy().inflate(-10,-self.rect.height * 0.6)
+            self.alive = False
+
+    def update(self,dt):
+        if self.alive:
+            self.check_death()
 
     def create_fruit(self):
         for pos in self.apple_pos:
