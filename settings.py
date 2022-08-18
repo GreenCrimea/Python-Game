@@ -1,3 +1,4 @@
+from pygame import Vector2
 #screen
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
@@ -21,4 +22,16 @@ LAYERS = {
     'house top': 8,
     'fruit': 9,
     'rain drops': 10
+}
+
+APPLE_POS = {
+    'Small': [(18,17), (30,37), (12,50), (30,45), (20,30), (30,10)],
+    'Large': [(30,24), (60,65), (50,50), (16,40), (45,50), (42,70)]
+}
+
+PLAYER_TOOL_OFFSET = {
+    'left': Vector2(-50,40),
+    'right': Vector2(50,40),
+    'up': Vector2(0,-10),
+    'down': Vector2(0,50)
 }
